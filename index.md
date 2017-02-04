@@ -1,37 +1,133 @@
-## Welcome to GitHub Pages
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geolocation</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+  	<h2>Fun! 高雄旅遊趣</h2>
+    <button onClick="go();">GO School</button>
+    <button onClick="goPosition();">GO Position</button>
+    <div id="map"></div>
+    <script>
+// Note: This example requires that you consent to location sharing when
+// prompted by your browser. If you see the error "The Geolocation service
+// failed.", it means you probably did not give permission for the browser to
+// locate you.
 
-You can use the [editor on GitHub](https://github.com/iamasky/map/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+var map;
+var marker;
 
-### Markdown
+function go() {
+	var myLatLng = {lat:22.6750049, lng:120.2829533};
+	map.setCenter( myLatLng );
+	marker.setPosition( myLatLng );
+	}
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+function goPosition() {
+	  navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+	  map.setCenter(pos);
+	  marker.setPosition(pos);
+	  });
+}
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    scaleControl: true,
+	center: {lat: -34.397, lng: 150.644},
+    zoom: 15
+  });
+  
+  var infowindow = new google.maps.InfoWindow;
+  infowindow.setContent('<b>目前所定位的位置</b>');
+  
+  // Try HTML5 geolocation.
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
+      //infoWindow.setPosition(pos);
+      //infoWindow.setContent('目前位置');
+	  
+	  //顯示目前位置
+      map.setCenter(pos);
+	  
+	  marker = new google.maps.Marker({
+	  map: map, 
+	  position:{lat: position.coords.latitude, lng: position.coords.longitude},
+	  title: "目前位置"
+  	  });
+	  
+	  marker.addListener('click', function() {
+      infowindow.open(map, marker);
+      });
+  
+  	  var contentString = '<b>目前所定位的位置</b>';
+  	  var infowindow = new google.maps.InfoWindow({
+		content:contentString
+  	  });
+	  
+	  var marker2 = new google.maps.Marker({
+	  map: map, 
+	  position:{lat: position.coords.latitude+0.003, lng: position.coords.longitude+0.003},
+	  title: "第二位置"
+  	  });
+	  
+	  var contentString = '<h1>第二位置<p><img src=http://icons.iconarchive.com/icons/martz90/circle/64/android-icon.png></h2>';
+  	  var infowindow2 = new google.maps.InfoWindow({
+		content:contentString,
+		maxWidth: 300
+  	  });
+	  
+	  marker2.addListener('mouseover', function() {
+      infowindow2.open(map, marker2);
+      });
+  
+      marker2.addListener('mouseout', function() {
+      infowindow2.close();
+      });
+	  
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+}
 
-**Bold** and _Italic_ and `Code` text
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(browserHasGeolocation ?
+                        'Error: The Geolocation service failed.' :
+                        'Error: Your browser doesn\'t support geolocation.');
+}
 
-[Link](url) and ![Image](src)
-```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/iamasky/map/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmkeppbrJJZvDeowFQISwWyH4lmMUHViQ&callback=initMap"
+        async defer></script>
+  </body>
+</html>
